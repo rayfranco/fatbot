@@ -1,22 +1,21 @@
 # Bot
-NICK        = "FatYouth"
-#CHANNELS    = ["#by-team","#by-news","#lol"]
+NICK        = "FatBot"
 CHANNELS    = ["#test"]
 
 # Server
-SERVER      = "192.168.0.202"
+SERVER      = "localhost"
 PORT        = 6667
 
 # Services will test new stuff every
 INTERVAL    = 600
 
 # Services will send to
-TWITTER_ST  = "#by-news"
-INSTAGRAM_ST= "#by-news"
+TWITTER_ST  = "#test"
+INSTAGRAM_ST= "#test"
 
 # Usernames
-UID_TWITTER = "big_youth"
-UID_INSTAGRAM = "agencebigyouth"
+UID_TWITTER = "rayfranco"
+UID_INSTAGRAM = "rayfranco"
 
 # API urls
 TWITTER     = "http://api.twitter.com/1/statuses/user_timeline.xml?screen_name=" + UID_TWITTER
