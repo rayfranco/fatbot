@@ -20,7 +20,7 @@ module Plugins
     end
 
     def printnew(entry)
-      Channel(CHANNEL).send "%s - %s" % [ 
+      Channel(TWITTER_ST).send "%s - %s" % [ 
         entry.css("title").inner_text,
         entry.css("image > link").inner_text.to_s
       ]
