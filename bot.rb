@@ -7,8 +7,8 @@ require 'time'
 # Server
 SERVER      = "192.168.0.202"
 PORT        = 6667
-#CHANNELS    = ["#by-team","#by-news","#lol"]
-CHANNELS    = ["#test"]
+CHANNELS    = ["#by-team","#by-news","#lol"]
+#CHANNELS    = ["#test"]
 
 # Bot
 NICK        = "FatYouth"
@@ -43,7 +43,8 @@ bot = Cinch::Bot.new do
       Plugins::Twitter, 
       Plugins::Lol, 
       Plugins::Instagram,
-      Plugins::Bonjourmadame
+      Plugins::Bonjourmadame,
+      Plugins::LastSeen
     ]
   end
 end
