@@ -14,7 +14,7 @@ module Plugins
       m.reply sentences.sample
     end
 
-    match /(?:.*)lol(?:.*)/, method: :saylol
+    match /(?:.*)(?:lol|kikoo|mdr)(?:.*)/, method: :saylol
     def saylol(m)
       sentences = [
         "Quel blagueur ce #{m.user.nick} ! lol",
@@ -24,6 +24,19 @@ module Plugins
         "#{m.user.nick} Allez, viens lol http://www.youtube.com/watch?v=5SIQPfeUTtg"
       ]
       m.reply sentences.sample
+    end
+
+    # You should be online before 10, or after 12 !
+    listen_to :join, method: :retard
+    def retard(m)
+      if (m.time.hour > 10 and m.time.hour < 12)
+        m.reply "#{m.user.nick} c'est a cette heure-ci qu'on arrive ? Elles sont ou les chocolatines ?"
+      end
+    end
+
+    match /(?:.*)pains? au chocolat(?:.*)/, method: :chocolatine
+    def chocolatine(m)
+      m.reply "#{m.user.nick} non, on dit bien chocolatine... Tu peux pas test."
     end
   end
 end
