@@ -2,8 +2,8 @@ require "time"
 
 # TODO a permanent store, to keep messages even after a restart of the bot
 
-  module Plugins
-    class LastSeen
+module Plugins
+	class LastSeen
       include Cinch::Plugin
 
       LoggedMessage = Struct.new(:nick, :channel, :message, :time)
@@ -23,7 +23,7 @@ require "time"
       def check_nick(m, nick)
         message = @logged_messages[nick]
         if message
-          m.reply "I've last seen #{nick} at #{message.time} in #{message.channel} saying: #{message.message}", true
+          m.reply "Mhhh... Il me semble bien avoir vu #{nick} le #{message.time.strftime('%-d/%-m a %Hh%M')} sur #{message.channel} en train de dire \"#{message.message}\"", true
         else
           m.reply "I haven't seen #{nick}, sorry.", true
         end
@@ -49,4 +49,4 @@ require "time"
         end
       end
     end
-  end
+end
