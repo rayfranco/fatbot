@@ -3,7 +3,7 @@ module Plugins
     include Cinch::Plugin
     set :react_on, :channel
 
-    match /(salut|hello|bonjour|hey|yo|plop) FatYouth/i, method: :sayhello
+    match /(salut|hello|bonjour|hey|yo|plop|yop|wesh) (FatYouth|Fat)/i, method: :sayhello
     def sayhello(m,msg)
       sentences = [
         "#{msg} #{m.user.nick}, bien ?",
@@ -14,7 +14,34 @@ module Plugins
       m.reply sentences.sample
     end
 
-    match /(?:.*)(?:lol|kikoo|mdr)(?:.*)/, method: :saylol
+    match /(?:.*FatYouth .*(sava|a va|vas tu).* ?)|(?:.*(a va|sava|vas tu).*FatYouth.* ?)/i, method: :sayhello2
+    def sayhello2(m,msg)
+      sentences = [
+        "#{m.user.nick}, bah ecoute, ca va :)",
+        "#{m.user.nick}, si si la famille toussa !",
+        "#{m.user.nick}, tranquille...",
+        "#{m.user.nick}, disons ca allait, jusqu'a ce que tu me parles..."
+      ]
+      m.reply sentences.sample
+    end
+
+    match /FatYouth .*(?:est|t\'es|tu es).* (\w+)/i, method: :stoi
+    def stoi(m,msg)
+      m.reply "#{m.user.nick} S'toi le #{msg}"
+    end
+
+    match /(?:(merci|thanks|thx) .*(FatYouth|Fat).*)|(?:FatYouth .*(merci|thanks|thx).*)/i, method: :derien
+    def derien(m,msg)
+      sentences = [
+        "#{m.user.nick} no souci poto.",
+        "#{m.user.nick} tkt !",
+        "#{m.user.nick} np",
+        "#{m.user.nick} de rien ;)"
+      ]
+      m.reply sentences.sample
+    end
+
+    match /(?:.*)(?:lol|kikoo|mdr|ptdr|haha|hoho|lfmao)(?:.*)/, method: :saylol
     def saylol(m)
       sentences = [
         "Quel blagueur ce #{m.user.nick} ! lol",
