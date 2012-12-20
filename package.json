@@ -1,6 +1,6 @@
 {
   "name": "FatBot",
-  "description": "An IRC bot on top of node",
+  "description": "An IRC bot coffeescript framework on top of node-irc",
   "author": "Franco Bouly <fbouly@gmail..com>",
   "version": "0.2.0",
   "repository": {
