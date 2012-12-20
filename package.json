@@ -1,0 +1,23 @@
+{
+  "name": "FatBot",
+  "description": "An IRC bot on top of node",
+  "author": "Franco Bouly <fbouly@gmail..com>",
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rayfranco/fatbot.git"
+  },
+  "bugs": {
+    "email": "floatboth@me.com",
+    "url": "https://github.com/rayfranco/fatbot/issues"
+  },
+  "dependencies": {
+    "coffee-script": "1.4.x",
+    "flour": "0.4.x",
+    "irc": "0.3.4"
+  },
+  "devDependencies": {
+    "buster": "0.6.x"
+  },
+  "engine": "node >= 0.4.1"
+}
