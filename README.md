@@ -16,18 +16,18 @@ Quick start
 Here is an example of a simple hello bot :
 
 ```coffeescript
-require 'fatbot'
+{Fatbot} = require 'fatbot'
 
-b = new Fatbot
+bot = new Fatbot
   server: 'freenode',
   username: 'fatbot',
   channels: ['#fatbot']
 
-# The refinery task hear is built-in
-b.refinery.hear /hello/, (msg) ->
+# The refinery helper `hear` is built-in
+bot.refinery.hear /hello/, (msg) ->
   msg.reply "Hello #{msg.author} !"
 
-b.connect()
+bot.connect()
 ```
 
 Then launch your bot :
@@ -42,17 +42,17 @@ Build from sources
 
 To build from sources, clone this repo :
 
-  git clone https://github.com/RayFranco/fatbot.git
+    git clone https://github.com/RayFranco/fatbot.git
 
 Then from the repo root folder, install the dependencies :
 
-  npm install
+    npm install
 
 You can now create your bot or try one frome the example in the folder `./bots/`
 
 Use cake task `bot:start` to start a bot :
 
-  cake -b simple bot:start
+    cake -b simple bot:start
 
 Here we are starting the example bot called `simple.coffee`
 
@@ -71,36 +71,36 @@ Sugars are object literals that contains multiple parameters :
     <th>Description</th>
   </tr>
   <tr>
-    <td>`on`</td>
+    <td> `on` </td>
     <td>true</td>
     <td>String event</td>
     <td>When to trigger the callback</td>
   </tr>
   <tr>
-    <td>`do`</td>
+    <td> `do` </td>
     <td>true</td>
     <td>Function callback(Message msg)</td>
     <td>What to do when event occurs</td>
   </tr>
   <tr>  
-    <td>`if`</td>
+    <td> `if` </td>
     <td>false</td>
     <td>Function boolean(Message msg)</td>
     <td>This have to be null or true for the callback to be executed</td>
   </tr>
 </table>
 
-Here is a sugar on top of 'hear' built-in refinery helper that says hello to a user that says 'hello' :
+Here is a sugar on top of `hear` built-in refinery helper that says hello to a user that says 'hello' :
 
 ```coffeescript
-b.hear /hello/, (msg) ->
+bot.refinery.hear /hello/, (msg) ->
   msg.reply "Hello #{msg.author} !"
 ```
 
 To build a sugar without passing by a refinery helper, just call `Fatbot.prototype.sweeten` method and return a sugar-structured object :
 
 ```coffeescript
-b.sweeten
+bot.sweeten
   on: 'user:connect'
   if: (msg) ->
     msg.username isnt 'fatbot'
@@ -112,12 +112,13 @@ Refinery
 ========
 
 The refinery is a sugar factory, it offers several methods (helpers) that create sugars quickly, with it's own logic.
+This will help create inline or complex sugars with less code *(look at the `hear` example)*
 
 Here is a refinery helper to test a regex on `user:message` event :
 
 ```coffeescript
-hear: (regex,callback) ->
-    handler =
+module.export.hear = (regex,callback) ->
+    sugar =
       on: 'user:talk'
       do: callback
       if: (msg) ->
@@ -129,7 +130,6 @@ hear: (regex,callback) ->
           return true
         else
           return false
-    @handlers.push handler
 ```
 
 Events
@@ -144,34 +144,46 @@ These are the events thrown by the IRC interface (@account)
 		<th>Parameters</th>
 	</tr>
 	<tr>
-		<td>`self:connected`</td>
+		<td> `self:connected` </td>
 		<td>Bot is connected to server</td>
 		<td>{String server}</td>
 	</tr>
 	<tr>
-		<td>`self:talk`</td>
+		<td> `self:talk` </td>
 		<td>Bot is talking</td>
 		<td>{String author, String channel, Object account}</td>
 	</tr>
 	<tr>
-		<td>`self:join`</td>
+		<td> `self:join` </td>
 		<td>Bot is joining a channel</td>
 		<td>{String channel, String username, Object message, Object account}</td>
 	</tr>
 	<tr>
-		<td>`user:talk`</td>
+		<td> `user:talk` </td>
 		<td>User is talking in channel</td>
 		<td>{String author, String channel, Object message, Object account}</td>
 	</tr>
 	<tr>
-		<td>`user:private`</td>
+		<td> `user:private` </td>
 		<td>User send pm to the bot</td>
 		<td>{String author, String channel, Object message, Object account}</td>
 	</tr>
 	<tr>
-		<td>`user:join`</td>
+		<td> `user:join` </td>
 		<td>User join a channel</td>
 		<td>{String channel, String username, Object message, Object account}</td>
 	</tr>
 
 </table>
+
+Change log
+==========
+
+### 2012-12-24 **v0.2.0** ###
+
+* Bot completely rewritten in coffeescript on top of node and node-irc
+* Fatbot is now a standalone framework
+* Plugins are now called sugars
+* Added sugars factories called refinery helpers
+* Merge of node branch into master
+* Fist beta working version of the coffeescript version
