@@ -1,1 +1,0 @@
-// This will the executable hello.coffee bot build

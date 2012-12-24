@@ -1,5 +1,5 @@
 module.exports.hear = (regex,callback) ->
-  handler =
+  sugar =
     on: 'user:talk'
     do: callback
     if: (msg) ->
@@ -7,8 +7,6 @@ module.exports.hear = (regex,callback) ->
       if msg.match
         msg.reply = (txt) ->
           msg.account.post(txt,msg.channel)
-          console.log "replying #{txt} in #{msg.channel}"
         return true
       else
         return false
-  @handlers.push handler

@@ -1,63 +1,41 @@
+@
+
 # Here will be the Bot logic
 
-fs    = require 'fs'
-{IRC} = require './irc'
+fs          = require 'fs'
+{IRC}       = require './irc'
+{Refinery}  = require './refinery'
+
+# Built-in refinery tasks
+hear        = require '../refinery/hear'
 
 # Helpers
 
-hear  = require '../refineries/hear'
-
 defaults =
-  server:   'barjavel.freenode.net'
-  username: 'fatbot'
-  channels: ['#fatbot']
-  refineries: [hear]                # Should be array of functions
-  sugars:   []
+  server:   'barjavel.freenode.net' # Server to join
+  username: 'fatbot'                # Bot name
+  channels: ['#fatbot']             # Array of channels
+  refineries: {}                    # Should be object of functions
+  sugars:   []                      # Should be array of sugar syntax objects
 
 class Fatbot
 
-  constructor: (@settings) ->
+  constructor: (settings) ->
     settings  = defaults # Should merge settings and defaults
+
+    @refinery = new Refinery @
+    @refinery.add settings.refineries
+    @refinery.add hear
+    
     @irc      = server: settings.server, username: settings.username, channels: settings.channels
-    @handlers = []
-    @refine   = settings.refineries
     @sugars   = settings.sugars
     @account  = null
 
-    # Adding built-in sugars
-    @sugars.connect = @connect
-    @sugars.hear  = @hear
-
-  # When events are thrown, this will request handlers
+  # When events are thrown, this will request sugars
   dispatch: (e, msg) ->
-    for handler in @handlers when handler.on is e
-      if not handler.if? or handler.if(msg)
-        handler.do(msg)
-
-  # Built-in helper
-  hear: (regex,callback) ->
-    handler =
-      on: 'user:talk'
-      do: callback
-      if: (msg) ->
-        msg.match = msg.message.match regex
-        if msg.match
-          msg.reply = (txt) ->
-            msg.account.post(txt,msg.channel)
-            console.log "replying #{txt} in #{msg.channel}"
-          return true
-        else
-          return false
-    @handlers.push handler
-
-  # Refinery helpers
-  timer: (time,callback) ->
-    handler =
-      on: 'self:connected'
-      do: () =>
-        c = () => callback.call(@account)
-        setInterval c, time
-    @handlers.push handler
+    for sugar in @sugars when sugar.on is e
+      if not sugar.if? or sugar.if(msg)
+        sugar.do(msg)
 
   # Connect the bot the server and set the account
   connect: (irc) ->
@@ -68,6 +46,9 @@ class Fatbot
     # Listen to all events
     @account.on '*', (e,params) =>
       @dispatch e, params
+
+  refine: (helper,args...) ->
+    @sweeten @refinery[helper].call(@)
 
   sweeten: (sugar) ->
     @sugars.push sugar
