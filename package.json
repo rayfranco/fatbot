@@ -14,7 +14,8 @@
   "dependencies": {
     "coffee-script": "1.4.x",
     "flour": "0.4.x",
-    "irc": "0.3.4"
+    "irc": "0.3.4",
+    "underscore": "1.4.x"
   },
   "devDependencies": {
     "buster": "0.6.x"

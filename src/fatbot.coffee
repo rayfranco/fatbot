@@ -1,8 +1,5 @@
-@
-
-# Here will be the Bot logic
-
 fs          = require 'fs'
+u           = require 'underscore'
 {IRC}       = require './irc'
 {Refinery}  = require './refinery'
 
@@ -21,14 +18,14 @@ defaults =
 class Fatbot
 
   constructor: (settings) ->
-    settings  = defaults # Should merge settings and defaults
+    @settings  = u.extend(defaults,settings)
 
     @refinery = new Refinery @
-    @refinery.add settings.refineries
+    @refinery.add @settings.refineries
     @refinery.add hear
-    
-    @irc      = server: settings.server, username: settings.username, channels: settings.channels
-    @sugars   = settings.sugars
+
+    @irc      = server: @settings.server, username: @settings.username, channels: @settings.channels
+    @sugars   = @settings.sugars
     @account  = null
 
   # When events are thrown, this will request sugars

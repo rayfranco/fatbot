@@ -42,17 +42,17 @@ Build from sources
 
 To build from sources, clone this repo :
 
-`git clone https://github.com/RayFranco/fatbot.git`
+  git clone https://github.com/RayFranco/fatbot.git
 
 Then from the repo root folder, install the dependencies :
 
-`npm install`
+  npm install
 
 You can now create your bot or try one frome the example in the folder `./bots/`
 
 Use cake task `bot:start` to start a bot :
 
-`cake -b simple bot:start`
+  cake -b simple bot:start
 
 Here we are starting the example bot called `simple.coffee`
 
