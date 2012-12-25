@@ -43,8 +43,6 @@ class IRC extends EventEmitter
 
     @server = if @server of servers then servers[@server] else @server
 
-    console.log @server
-
     @client = new irc.Client @server, @username, channels: @channels
     @channels = channels
 

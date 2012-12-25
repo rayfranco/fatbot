@@ -1,5 +1,7 @@
 {Fatbot} = require '../src/fatbot.coffee'
 
+{register,lastseen} = require '../sugars/lastseen.coffee'
+
 # Bot settings
 settings =
   server: 'freenode',
@@ -31,6 +33,10 @@ b.refinery.hear /hello/, (msg) ->
 
 b.refinery.hear /bye/, (msg) ->
   msg.reply "Goodbye #{msg.author} !"
+
+# Add some sugars
+b.sweeten register
+b.sweeten lastseen
 
 # Add some inline sugar
 b.sweeten
