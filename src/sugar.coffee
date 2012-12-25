@@ -1,1 +1,6 @@
-# Here will be the sugars interface
+class Sugar
+  constructor: (@fatbot)
+    @on: null
+  if: (msg) ->
+    return true
+  do: (msg) ->
