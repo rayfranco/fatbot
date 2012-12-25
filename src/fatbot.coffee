@@ -9,7 +9,7 @@ hear        = require '../refinery/hear'
 # Helpers
 
 defaults =
-  server:   'barjavel.freenode.net' # Server to join
+  server:   'irc.freenode.net'      # Server to join
   username: 'fatbot'                # Bot name
   channels: ['#fatbot']             # Array of channels
   refineries: {}                    # Should be object of functions

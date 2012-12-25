@@ -1,7 +1,7 @@
 {Fatbot} = require '../src/fatbot.coffee'
 
 b = new Fatbot
-  server: 'irc.freenode.net',
+  server: 'freenode',
   username: 'fatbot',
   channels: ['#fatbot']
 

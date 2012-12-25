@@ -29,8 +29,22 @@ user:join     # Hear a join
 irc = require 'irc'
 {EventEmitter} = require 'events'
 
+# Built-in servers configuration
+servers =
+  'dalnet': 'irc.dal.net'
+  'efnet': 'irc.efnet.net'
+  'freenode': 'irc.freenode.net'
+  'mozilla': 'irc.mozilla.org'
+  'quakenet': 'irc.quakenet.org'
+  'undernet': 'us.undernet.org'
+
 class IRC extends EventEmitter
   constructor: (@server, @username, @channels) ->
+
+    @server = if @server of servers then servers[@server] else @server
+
+    console.log @server
+
     @client = new irc.Client @server, @username, channels: @channels
     @channels = channels
 
