@@ -1,6 +1,13 @@
-{Fatbot} = require '../src/fatbot.coffee'
+{Fatbot}  = require '../src/fatbot.coffee'
 
+# Refinery helpers
+{hear}    = require '../refinery/hear'
+{timer}   = require '../refinery/timer'
+
+# Sugars
 {register,lastseen} = require '../sugars/lastseen.coffee'
+{logs}    = require '../sugars/lastseen.coffee'
+{greets}  = require '../sugars/lastseen.coffee'
 
 # Bot settings
 settings =
@@ -11,21 +18,9 @@ settings =
 # Instanciating the bot
 b = new Fatbot settings
 
-# We add can load refinery patterns from files
-b.refinery.add require '../refinery/hear'
-
-# We can add inline refinery patterns
-b.refinery.add
-  timer: (time,callback) ->
-    sugar =
-      on: 'self:connected'
-      do: () =>
-        c = () => callback.call(@account)
-        setInterval c, time
-
-# And using it after for inline sugar creation
-b.refinery.timer 60000*5, () ->
-  @post 'I am so bored...','#fatbot'
+# Add some refinery helpers
+b.refinery.add 'timer', timer
+b.refinery.add 'hear', hear
 
 # Create some sugars built by the refinery patten `hear`
 b.refinery.hear /hello/, (msg) ->
@@ -34,16 +29,14 @@ b.refinery.hear /hello/, (msg) ->
 b.refinery.hear /bye/, (msg) ->
   msg.reply "Goodbye #{msg.author} !"
 
+# And using it after for inline sugar creation
+b.refinery.timer 60000*5, () ->
+  @bot.account.post 'I am so bored...','#fatbot'
+
 # Add some sugars
 b.sweeten register
 b.sweeten lastseen
-
-# Add some inline sugar
-b.sweeten
-  on: 'user:connect'
-  if: (msg) ->
-    msg.username isnt 'fatbot'
-  do: (msg) ->
-    msg.account.post "Welcome on #{msg.channel}, #{msg.username} !", msg.channel
+b.sweeten logs
+b.sweeten greets
 
 b.connect()

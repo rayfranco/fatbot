@@ -1,6 +1,5 @@
 class Sugar
-  constructor: (@fatbot)
-    @on: null
-  if: (msg) ->
-    return true
-  do: (msg) ->
+  constructor: (@on, @do, @if = true) ->
+    if typeof @if isnt 'function'
+      @if = () ->  true
+module.exports.Sugar = Sugar

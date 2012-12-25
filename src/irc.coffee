@@ -44,7 +44,6 @@ class IRC extends EventEmitter
     @server = if @server of servers then servers[@server] else @server
 
     @client = new irc.Client @server, @username, channels: @channels
-    @channels = channels
 
     ###
     Events
@@ -60,7 +59,7 @@ class IRC extends EventEmitter
         @emit 'user:talk', author: from, channel: to, message: message, account: @
 
     @client.on 'pm', (from, text, message) =>
-      @emit 'user:private', author: from, channel: to, message: message, account: @
+      @emit 'user:private', author: from, message: message, account: @
 
     @client.on 'join', (channel, nick, message) =>
       if nick is @username
@@ -77,11 +76,9 @@ class IRC extends EventEmitter
   post: (text, channel) ->
     if channel?
       @client.say channel, text
-      console.log "[#{channel}] I'm saying : #{text}"
     else
       for channel in @channels
         @client.say channel, text
-      console.log "[wide] I'm saying : #{text}"
 
   leave: (channel, callback) ->
     if channels in @channels

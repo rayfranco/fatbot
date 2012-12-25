@@ -1,6 +1,7 @@
 fs          = require 'fs'
 u           = require 'underscore'
 {IRC}       = require './irc'
+{Sugar}     = require './sugar'
 {Refinery}  = require './refinery'
 
 # Built-in refinery tasks
@@ -18,11 +19,11 @@ defaults =
 class Fatbot
 
   constructor: (settings) ->
-    @settings  = u.extend(defaults,settings)
+    @settings = u.extend(defaults,settings)
 
     @refinery = new Refinery @
     @refinery.add @settings.refineries
-    @refinery.add hear
+    #@refinery.add hear
 
     @irc      = server: @settings.server, username: @settings.username, channels: @settings.channels
     @sugars   = @settings.sugars
@@ -36,9 +37,8 @@ class Fatbot
 
   # Connect the bot the server and set the account
   connect: (irc) ->
-    # Connect to server
     if not irc? then irc = @irc
-    @account  = new IRC @irc.server, @irc.username, @irc.channels
+    @account  = new IRC irc.server, irc.username, irc.channels
 
     # Listen to all events
     @account.on '*', (e,params) =>
@@ -47,7 +47,12 @@ class Fatbot
   refine: (helper,args...) ->
     @sweeten @refinery[helper].call(@)
 
-  sweeten: (sugar) ->
+  sweeten: (e,callback,condition) ->
+    if typeof e is 'object'
+      sugar = e
+    else
+      sugar = new Sugar e, callback, condition
+      sugar.bot = @
     @sugars.push sugar
 
 exports.Fatbot = Fatbot
