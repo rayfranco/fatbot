@@ -31,6 +31,11 @@ class Bot extends events.EventEmitter
   sugars = [] # Unused for now
 
   constructor: (settings, nick, channels) ->
+
+    # Read package.json
+    file = fs.readFileSync __dirname + '/../package.json', 'utf-8'
+    @package =  JSON.parse file
+
     if typeof settings is 'string'
       @settings.server = settings
       @settings.nick = nick
@@ -44,6 +49,9 @@ class Bot extends events.EventEmitter
 
     @emit 'self:start'
       client: @client
+
+  toString: () ->
+    "#{@package.name}/#{@package.version} node/#{process.versions.node}"
 
   ###
   Sugars event dispatcher # Unused for now
@@ -173,7 +181,8 @@ Bot::loadExtensions = ->
     @on '*', (e,r) ->
       @debug e r
   @on 'self:start', ->
-    console.log "I'm #{sty.bold sty.cyan 'loaded'}, ready to connect !"
+    version = @toString()
+    console.log "[#{sty.bold sty.green version}] I'm #{sty.bold sty.cyan 'loaded'}, ready to connect !"
   @on 'self:connected', (r) ->
     console.log "I'm connected to #{sty.green sty.bold r.server}"
   @on 'self:join', (r) ->
