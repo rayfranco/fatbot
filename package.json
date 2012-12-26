@@ -18,6 +18,6 @@
     "underscore": "1.4.x",
     "sty": "0.6.x"
   },
-  "main": "./lib/fatbot.coffee"
+  "main": "./lib/fatbot.coffee",
   "engine": "node >= 0.4.1"
 }
