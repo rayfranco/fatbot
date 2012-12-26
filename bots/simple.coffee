@@ -1,28 +1,29 @@
 fatbot = require '../lib/fatbot'
 
-b = new fatbot.Bot
-  server: 	'192.168.0.202',
-  nick: 	'fatbot',
-  channels: ['#fatbot']
+bot = new fatbot.Bot
+  server:   '192.168.0.202',
+  nick:   'fatbot',
+  channels: ['#fatbot','#skinnybot']
+  botDebug: false
 
-# # The refinery task hear is built-in
-# b.refinery.hear /hello/, (msg) ->
-#   msg.reply "Hello #{msg.author} !"
+# Listen to Bot events
 
-b.on 'user:talk', (r) ->
-  #console.log(r)
-  if r.text.match /hello/
-  	r.reply "Hello johnny"
+bot.on 'user:join', (r) ->
+  r.reply "Welcome to #{r.channel}, #{r.nick} !"
 
-b.bind 'sugar:match', /hello/, (r) ->
-    r.reply "Hello #{r.nick} !"
+# Extending bot prototype
 
-b.addSugar 'match', 'user:talk', (r,regex,callback) ->
-    if match = r.text.match regex and typeof callback is 'function'
-        callback(r)
+fatbot.Bot::hear = (regex,callback) ->
+  @on 'user:talk', (r) ->
+    if r.text.match regex
+      callback(r)
 
+# Using newly created extensions
 
-b.on '*', (e,r) ->
-  #console.log e,r
+bot.hear /hello/, (r) ->
+  r.reply "Hello #{r.nick} !"
 
-b.connect()
+bot.hear /bye/, (r) ->
+  r.reply "Good bye #{r.nick}"
+
+bot.connect()

@@ -8,24 +8,44 @@
 
 FatBot is an easy to use and extensible coffescript IRC bot framework.
 
-**NOTE : This README.md is used as specs for now. This is still a draft at some points.**
-
 Quick start
 ===========
 
-Here is an example of a simple hello bot :
+Create a file `mybot.coffee`
+
+Install fatbot via npm
+
+    npm install fatbot
+
+Here is an example of a simple bot :
 
 ```coffeescript
-{Fatbot} = require 'fatbot'
+fatbot = require 'fatbot'
 
-bot = new Fatbot
-  server: 'freenode',
-  username: 'fatbot',
-  channels: ['#fatbot']
+bot = new fatbot.Bot
+  server:   'freenode',
+  nick:   'mybot',
+  channels: ['#mycoolchan']
 
-# The refinery helper `hear` is built-in
-bot.refinery.hear /hello/, (msg) ->
-  msg.reply "Hello #{msg.author} !"
+# Listen to Bot events
+
+bot.on 'user:join', (r) ->
+  r.reply "Welcome to #{r.channel}, #{r.nick} !"
+
+# Extending bot prototype
+
+fatbot.Bot::hear = (regex,callback) ->
+  @on 'user:talk', (r) ->
+    if r.text.match regex
+      callback(r)
+
+# Using newly created extensions
+
+bot.hear /hello/, (r) ->
+  r.reply "Hello #{r.nick} !"
+
+bot.hear /bye/, (r) ->
+  r.reply "Good bye #{r.nick}"
 
 bot.connect()
 ```
@@ -35,6 +55,14 @@ Then launch your bot :
 ```coffeescript
 coffee mybot
 ```
+
+In this example, you are :
+
+* Connecting `mybot` to a built-in server shortcut called `freenode` and join a channel called `#mycoolchan`
+* Perform action on events with `Fatbot::on`
+* Extending the prototype for event listening automation : `Fatbot::hear`
+* Using the extension `Fatbot::hear`
+* Launching the bot with `Fatbot::connnect` method
 
 
 Build from sources
@@ -54,130 +82,84 @@ Use cake task `bot:start` to start a bot :
 
     cake -b simple bot:start
 
-Here we are starting the example bot called `simple.coffee`
+Above, we are launching the example bot called `simple.coffee`
 
+Extending the Bot
+=================
 
-Sugars
-======
+To extend the bot, we are simply extending the `fatbot.Bot`. This might me a little risky, if you'd tries to overwrite Bot methods (like *constructor*, *connect*, *say* or any other methods).
+You should be aware of what methods you are adding to the Bot.
 
-Sugars are behaviors. For example, saying hello to a user that connects to a channel.
-Sugars are object literals that contains multiple parameters :
+In the future, I'd like to add these helpers in a different namespace (*sugars*).
 
-<table>
-  <tr>
-    <th>Parameter</th>
-    <th>Required</th>
-    <th>Arguments</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td> `on` </td>
-    <td>true</td>
-    <td>String event</td>
-    <td>When to trigger the callback</td>
-  </tr>
-  <tr>
-    <td> `do` </td>
-    <td>true</td>
-    <td>Function callback(Message msg)</td>
-    <td>What to do when event occurs</td>
-  </tr>
-  <tr>  
-    <td> `if` </td>
-    <td>false</td>
-    <td>Function boolean(Message msg)</td>
-    <td>This have to be null or true for the callback to be executed</td>
-  </tr>
-</table>
-
-Here is a sugar on top of `hear` built-in refinery helper that says hello to a user that says 'hello' :
-
-```coffeescript
-bot.refinery.hear /hello/, (msg) ->
-  msg.reply "Hello #{msg.author} !"
-```
-
-To build a sugar without passing by a refinery helper, just call `Fatbot.prototype.sweeten` method and return a sugar-structured object :
-
-```coffeescript
-bot.sweeten
-  on: 'user:connect'
-  if: (msg) ->
-    msg.username isnt 'fatbot'
-  do: (msg) ->
-    msg.account.post "Welcome on #{msg.channel}, #{msg.username} !", msg.channel
-```
-
-Refinery
-========
-
-The refinery is a sugar factory, it offers several methods (helpers) that create sugars quickly, with it's own logic.
-This will help create inline or complex sugars with less code *(look at the `hear` example)*
-
-Here is a refinery helper to test a regex on `user:message` event :
-
-```coffeescript
-module.export.hear = (regex,callback) ->
-    sugar =
-      on: 'user:talk'
-      do: callback
-      if: (msg) ->
-        msg.match = msg.message.match regex
-        if msg.match
-          msg.reply = (txt) ->
-            msg.account.post(txt,msg.channel)
-            console.log "replying #{txt} in #{msg.channel}"
-          return true
-        else
-          return false
-```
+For more informations, see the [Classes section of coffeescript](http://coffeescript.org/#classes) to understand how to extend the prototype, especially with the `::` operator.
 
 Events
 ======
 
-These are the events thrown by the IRC interface (@account)
+You can easily add behaviors to the bot by listening to events :
+
+```coffeescript
+bot.on 'user:join', (r) ->
+  r.reply "Welcome to #{r.channel}, #{r.nick} !"
+```
+
+`r` is the Response object.
+
+These are the events thrown by the bot. Check the Response object section for more informations
 
 <table>
 	<tr>
 		<th>Event name</th>
 		<th>Description</th>
-		<th>Parameters</th>
+		<th>Response</th>
 	</tr>
+  <tr>
+    <td> `client:error` </td>
+    <td>Error sent by the client</td>
+    <td>err (isnt Response object)</td>
+  </tr>
 	<tr>
 		<td> `self:connected` </td>
 		<td>Bot is connected to server</td>
-		<td>{String server}</td>
+		<td>server</td>
 	</tr>
 	<tr>
 		<td> `self:talk` </td>
 		<td>Bot is talking</td>
-		<td>{String author, String channel, Object account}</td>
+		<td>nick, text, client, reply(txt)</td>
 	</tr>
 	<tr>
 		<td> `self:join` </td>
 		<td>Bot is joining a channel</td>
-		<td>{String channel, String username, Object message, Object account}</td>
+		<td>channel, nick, text, client</td>
 	</tr>
 	<tr>
 		<td> `user:talk` </td>
 		<td>User is talking in channel</td>
-		<td>{String author, String channel, Object message, Object account}</td>
+		<td>nick, channel, text, client, reply(txt)</td>
 	</tr>
 	<tr>
 		<td> `user:private` </td>
 		<td>User send pm to the bot</td>
-		<td>{String author, String channel, Object message, Object account}</td>
+		<td>nick, text, client</td>
 	</tr>
 	<tr>
 		<td> `user:join` </td>
 		<td>User join a channel</td>
-		<td>{String channel, String username, Object message, Object account}</td>
+		<td>channel, nick, text, client, reply(txt)</td>
 	</tr>
-
 </table>
 
 Change log
 ==========
+
+### 2012-12-26 **v0.3.0** ###
+
+* Bot completely rewritten (again)
+* Temporary removing sugars in favor of prototype extensions
+* Refinery lost in translation ;)
+* Simpler code to do such simple things
 
 ### 2012-12-24 **v0.2.0** ###
 

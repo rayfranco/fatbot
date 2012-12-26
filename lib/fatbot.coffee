@@ -1,5 +1,6 @@
 fs          = require 'fs'
 irc         = require 'irc'
+sty         = require 'sty'
 u           = require 'underscore'
 events      = require 'events'
 
@@ -11,6 +12,7 @@ defaults =
   port: 6667
   channels: ['#fatbot']
   autoConnect: false
+  botDebug: false
 
 servers =
   'dalnet': 'irc.dal.net'
@@ -26,6 +28,8 @@ class Bot extends events.EventEmitter
   Constructor
   ###
 
+  sugars = [] # Unused for now
+
   constructor: (settings, nick, channels) ->
     if typeof settings is 'string'
       @settings.server = settings
@@ -34,16 +38,26 @@ class Bot extends events.EventEmitter
     else
       @settings = u.extend defaults, settings
 
-    console.log @settings.server
+    @prepClient()
+    @prepEvents()
+    @loadExtensions()
 
-    prepClient.call @
-    prepEvents.call @
+    @emit 'self:start'
+      client: @client
+
+  ###
+  Sugars event dispatcher # Unused for now
+  ###
+
+  dispatch: (e, r) ->
+  for sugar in sugars when sugar.listener is e
+      sugar.callback(r)
 
   ###
   Connect the client
   ###
 
-  connect: () ->
+  connect: ->
     @client.connect()
     return
 
@@ -51,8 +65,7 @@ class Bot extends events.EventEmitter
   Configure client and Events handlers
   ###
 
-  prepClient = ->
-    console.log 'PREP CLIENT'
+  prepClient: ->
     @settings.server  = if @settings.server of servers then servers[@settings.server] else @settings.server
     @client           = new irc.Client @settings.server, @settings.nick,
       userName: @settings.username
@@ -62,9 +75,8 @@ class Bot extends events.EventEmitter
       autoConnect: false
       autoRejoin: true
 
-  prepEvents = ->
+  prepEvents: ->
     @client.on 'error', (err) ->
-      console.log err
       @emit 'client:error', err
 
     @client.on 'registered', (msg) =>
@@ -72,13 +84,7 @@ class Bot extends events.EventEmitter
         server: msg.server
 
     @client.on 'message', (from, to, message) =>
-      if from is @settings.nick
-        @emit 'self:talk'
-          nick: from
-          channel: to
-          text: message
-          client: @client
-      else
+      if to isnt @settings.nick
         @emit 'user:talk'
           nick: from
           channel: to
@@ -89,7 +95,7 @@ class Bot extends events.EventEmitter
     @client.on 'pm', (from, text, message) =>
       @emit 'user:private'
         nick: from
-        text: message
+        text: text
         client: @client
         reply: (txt) => @say txt, from
 
@@ -106,7 +112,15 @@ class Bot extends events.EventEmitter
           nick: nick
           text: message
           client: @client
-    
+          reply: (txt) => @say txt, channel
+
+  debug: (n,d) ->
+    if @settings.botDebug
+      console.log "[#{sty.bold 'debug'}](#{sty.red sty.bold n}) #{sty.bold d}"
+
+  # This is temporary, do not use
+  loadExtensions: ->
+
   ###
   Catch all events
   ###
@@ -123,21 +137,50 @@ class Bot extends events.EventEmitter
   say: (text, channel) ->
     if channel?
       @client.say channel, text
+      @emit 'self:talk'
+          channel: channel
+          text: text
+          client: @client
     else
       for channel in @channels
+        @emit 'self:talk'
+          channel: channel
+          text: text
+          client: @client
         @client.say channel, text
 
   leave: (channel, callback) ->
     if channels in @channels
       @client.part channel, callback
       @channels.pop channel
-      console.log "I leaved #{channel} !"
-    else
-      console.log "I can't leave #{channel}..."
     
   join: (channel, callback) ->
     @client.join channel, callback
     @chanels.push channel
-    console.log "I should join #{channel}"
+
+
+###
+Built-in extensions
+###
+
+Bot::hear = (regex,callback) ->
+  @on 'user:talk', (r) ->
+    if r.text.match regex
+      callback(r)
+
+Bot::loadExtensions = ->
+  if @settings.botDebug
+    @on '*', (e,r) ->
+      @debug e r
+  @on 'self:start', ->
+    console.log "I'm #{sty.bold sty.cyan 'loaded'}, ready to connect !"
+  @on 'self:connected', (r) ->
+    console.log "I'm connected to #{sty.green sty.bold r.server}"
+  @on 'self:join', (r) ->
+    console.log "I've just joined #{sty.yellow r.channel}"
+  @on 'self:talk', (r) ->
+    console.log "[#{sty.bold sty.red r.channel}] #{sty.green r.text}"
+  @on 'user:private', (r) ->
+    console.log "[#{sty.bold sty.red 'private'}] #{sty.green r.nick}: #{r.text}"
 
 module.exports.Bot = Bot
