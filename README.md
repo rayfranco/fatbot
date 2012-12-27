@@ -84,6 +84,48 @@ Use cake task `bot:start` to start a bot :
 
 Above, we are launching the example bot called `simple.coffee`
 
+Sweeten your Bot
+================
+
+If you'd like to add a couple functionnalities to your bot, you better getting organized. Here is the way we suggest.
+
+If the function `Bot::on` take two parameters [as described by the EventEmitter class](http://nodejs.org/api/events.html#events_emitter_on_event_listener), Fatbot also takes an object literal syntax like this:
+
+```coffeescript
+bot.on
+  event: 'user:talk'
+  trigger: (r) ->
+    console.log "#{r.nick} is talking..."
+```
+
+The best part in this syntax, is that now **you can bundle these objects into arrays**, and send it to the `Bot::on` function. This way, you can now store all your extensions logic in separate files easily. Let's take a look at an example:
+
+```coffeescript
+# ./sugars/hello.coffee
+callback = (r) -> r.reply "Hello #{r.reply}!"
+ontalk =
+  event: 'user:talk'
+  trigger: callback
+onprivate =
+  event: 'user:private'
+  trigger: callback
+
+module.exports = [ontalk, onprivate]
+```
+
+```coffeescript
+# ./bot.coffee
+hello = require './sugars/hello'
+
+#...
+
+bot.on hello
+
+bot.connect()
+```
+
+This is an easy way to bundle sugars into a file and keep it simple and readable. Try it out!
+
 Extending the Bot
 =================
 
@@ -101,7 +143,7 @@ You can easily add behaviors to the bot by listening to events :
 
 ```coffeescript
 bot.on 'user:join', (r) ->
-  r.reply "Welcome to #{r.channel}, #{r.nick} !"
+  r.reply "Welcome to #{r.channel}, #{r.nick}!"
 ```
 
 `r` is the Response object.
@@ -154,7 +196,13 @@ These are the events thrown by the bot. Check the Response object section for mo
 Change log
 ==========
 
-### 2012-12-26 **v0.3.0** ###
+### 2012-12-26 **v0.3.2** ###
+
+* You can now add event listeners with objects literal
+* You can now add event listeners bundled in arrays
+* README.md upadated with new examples
+
+### 2012-12-26 **v0.3.1** ###
 
 * Bot completely rewritten (again)
 * Temporary removing sugars in favor of prototype extensions

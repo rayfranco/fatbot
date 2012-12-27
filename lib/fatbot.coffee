@@ -59,7 +59,7 @@ class Bot extends events.EventEmitter
 
   dispatch: (e, r) ->
   for sugar in sugars when sugar.listener is e
-      sugar.callback(r)
+    sugar.callback(r)
 
   ###
   Connect the client
@@ -137,6 +137,14 @@ class Bot extends events.EventEmitter
     super e, params...
     if e isnt '*'
       @emit '*', e, params...
+
+  on: (e, callback) ->
+    if typeof e is 'string'
+      super e, callback       # Is native syntax
+    else if e.event? and e.trigger?
+      @on e.event, e.trigger  # Is object literal syntax
+    else
+      @on o for o in e        # Is array of objects literal
 
   ###
   IRC basic interface
