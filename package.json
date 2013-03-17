@@ -2,7 +2,7 @@
   "name": "fatbot",
   "description": "An easy to use coffeescript IRC bot framework",
   "author": "Franco Bouly <fbouly@gmail..com>",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "keywords": [ "coffeescript", "chat", "irc", "bot" ],
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "url": "https://github.com/rayfranco/fatbot/issues"
   },
   "dependencies": {
-    "coffee-script": "1.4.x",
+    "coffee-script": ">= 1.4.0",
     "irc": "0.3.4",
     "underscore": "1.4.x",
     "sty": "0.6.x"

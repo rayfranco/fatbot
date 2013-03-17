@@ -196,6 +196,9 @@ These are the events thrown by the bot. Check the Response object section for mo
 Change log
 ==========
 
+### 2013-03-17 **v0.3.3** ###
+* Fix CB when using coffee-script v.1.6.x compiler
+
 ### 2012-12-26 **v0.3.2** ###
 
 * You can now add event listeners with objects literal
