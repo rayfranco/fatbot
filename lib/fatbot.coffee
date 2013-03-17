@@ -47,7 +47,7 @@ class Bot extends events.EventEmitter
     @prepEvents()
     @loadExtensions()
 
-    @emit 'self:start'
+    @emit 'self:start',
       client: @client
 
   toString: () ->
@@ -88,12 +88,12 @@ class Bot extends events.EventEmitter
       @emit 'client:error', err
 
     @client.on 'registered', (msg) =>
-      @emit 'self:connected'
+      @emit 'self:connected',
         server: msg.server
 
     @client.on 'message', (from, to, message) =>
       if to isnt @settings.nick
-        @emit 'user:talk'
+        @emit 'user:talk',
           nick: from
           channel: to
           text: message
@@ -101,7 +101,7 @@ class Bot extends events.EventEmitter
           reply: (txt) => @say txt, to
 
     @client.on 'pm', (from, text, message) =>
-      @emit 'user:private'
+      @emit 'user:private',
         nick: from
         text: text
         client: @client
@@ -109,13 +109,13 @@ class Bot extends events.EventEmitter
 
     @client.on 'join', (channel, nick, message) =>
       if nick is @settings.nick
-        @emit 'self:join'
+        @emit 'self:join',
           channel: channel
           nick: nick
           text: message
           client: @client
       else
-        @emit 'user:join'
+        @emit 'user:join',
           channel: channel
           nick: nick
           text: message
@@ -153,13 +153,13 @@ class Bot extends events.EventEmitter
   say: (text, channel) ->
     if channel?
       @client.say channel, text
-      @emit 'self:talk'
+      @emit 'self:talk',
           channel: channel
           text: text
           client: @client
     else
       for channel in @channels
-        @emit 'self:talk'
+        @emit 'self:talk',
           channel: channel
           text: text
           client: @client
