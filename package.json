@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "colors": "^1.1.2",
-    "irc": "0.3.4"
+    "irc": "0.5.0"
   },
   "main": "./lib/fatbot.js",
   "engine": "node >= 0.4.1",
