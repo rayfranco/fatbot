@@ -1,9 +1,17 @@
 {
   "name": "fatbot",
-  "description": "An easy to use coffeescript IRC bot framework",
+  "description": "An easy to use ES6 IRC bot framework",
   "author": "Franco Bouly <fbouly@gmail..com>",
-  "version": "0.3.3",
-  "keywords": [ "coffeescript", "chat", "irc", "bot" ],
+  "version": "1.0.0-alpha",
+  "scripts": {
+    "simple": "babel-node --presets es2015 bots/simple.js"
+  },
+  "keywords": [
+    "es6",
+    "chat",
+    "irc",
+    "bot"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/rayfranco/fatbot.git"
@@ -13,11 +21,14 @@
     "url": "https://github.com/rayfranco/fatbot/issues"
   },
   "dependencies": {
-    "coffee-script": ">= 1.4.0",
     "irc": "0.3.4",
-    "underscore": "1.4.x",
-    "sty": "0.6.x"
+    "sty": "0.6.x",
+    "underscore": "1.4.x"
   },
-  "main": "./lib/fatbot.coffee",
-  "engine": "node >= 0.4.1"
+  "main": "./lib/fatbot.js",
+  "engine": "node >= 0.4.1",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0"
+  }
 }
