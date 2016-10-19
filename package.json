@@ -22,8 +22,7 @@
   },
   "dependencies": {
     "irc": "0.3.4",
-    "sty": "0.6.x",
-    "underscore": "1.4.x"
+    "sty": "0.6.x"
   },
   "main": "./lib/fatbot.js",
   "engine": "node >= 0.4.1",
