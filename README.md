@@ -1,154 +1,140 @@
 ```ascii
-    ______      __  ____        __ 
+    ______      __  ____        __
    / ____/___ _/ /_/ __ )____  / /_
   / /_  / __ `/ __/ __  / __ \/ __/
  / __/ / /_/ / /_/ /_/ / /_/ / /_  
 /_/    \__,_/\__/_____/\____/\__/  
 ```
 
-FatBot is an easy to use and extensible coffescript IRC bot framework.
+FatBot is an easy to use and extensible ES6 IRC bot framework.
+
+> Note: You are reading the documentation of the ES6 version (v1.x). If you are looking for the v0.3 documentation (`coffeescript`) please refer to the [0.3 branch](https://github.com/rayfranco/fatbot/tree/0.3).
 
 Quick start
 ===========
 
-Create a file `mybot.coffee`
+## Install fatbot via npm
 
-Install fatbot via npm
+```bash
+> npm install fatbot
+```
 
-    npm install fatbot
+## Create a file `bot.js`
 
-Here is an example of a simple bot :
+```javascript
+import { Bot } from 'fatbot'
 
-```coffeescript
-fatbot = require 'fatbot'
+let bot = new Bot({
+  server: 'freenode',
+  nick: 'fatbot',
+  channels: ['#fatbot', '#skinnybot'],
+  botDebug: false
+})
 
-bot = new fatbot.Bot
-  server:   'freenode',
-  nick:   'mybot',
-  channels: ['#mycoolchan']
+// Listen to Bot events
 
-# Listen to Bot events
-
-bot.on 'user:join', (r) ->
+bot.on('user:join', (r) => {
   r.reply "Welcome to #{r.channel}, #{r.nick} !"
+})
 
-# Extending bot prototype
+// Listening discussion
 
-fatbot.Bot::hear = (regex,callback) ->
-  @on 'user:talk', (r) ->
-    if r.text.match regex
-      callback(r)
+bot.hear(/hello/, (r) => {
+  r.reply(`Hello ${r.nick} !`)
+})
 
-# Using newly created extensions
-
-bot.hear /hello/, (r) ->
-  r.reply "Hello #{r.nick} !"
-
-bot.hear /bye/, (r) ->
-  r.reply "Good bye #{r.nick}"
+// Connect the bot
 
 bot.connect()
 ```
 
-Then launch your bot :
+## Launch the bot
 
-```coffeescript
-coffee mybot
+```bash
+> fatbot bot.js
 ```
 
 In this example, you are :
 
-* Connecting `mybot` to a built-in server shortcut called `freenode` and join a channel called `#mycoolchan`
+* Connecting `mybot` to a built-in server shortcut called `freenode` and join a channel called `#fatbot`
 * Perform action on events with `Fatbot::on`
-* Extending the prototype for event listening automation : `Fatbot::hear`
-* Using the extension `Fatbot::hear`
 * Launching the bot with `Fatbot::connnect` method
 
+> Note: Since your bot will be launched with babel-node you can write your bot in ES6
 
-Build from sources
-==================
+Organize your Bot
+=================
 
-To build from sources, clone this repo :
+For large bot projects, you may want to split your functionalities into different files.
 
-    git clone https://github.com/RayFranco/fatbot.git
+You can use `Bot::on` with an object literal
 
-Then from the repo root folder, install the dependencies :
-
-    npm install
-
-You can now create your bot or try one frome the example in the folder `./bots/`
-
-Use cake task `bot:start` to start a bot :
-
-    cake -b simple bot:start
-
-Above, we are launching the example bot called `simple.coffee`
-
-Sweeten your Bot
-================
-
-If you'd like to add a couple functionnalities to your bot, you better getting organized. Here is the way we suggest.
-
-If the function `Bot::on` take two parameters [as described by the EventEmitter class](http://nodejs.org/api/events.html#events_emitter_on_event_listener), Fatbot also takes an object literal syntax like this:
-
-```coffeescript
-bot.on
-  event: 'user:talk'
-  trigger: (r) ->
-    console.log "#{r.nick} is talking..."
+```javascript
+bot.on({
+  event: 'user:talk',
+  trigger: (r) => {
+    console.log(`${r.nick} is talking...`)
+  }
+})
 ```
 
-The best part in this syntax, is that now **you can bundle these objects into arrays**, and send it to the `Bot::on` function. This way, you can now store all your extensions logic in separate files easily. Let's take a look at an example:
+```javascript
+// ./lib/hello.js
+function callback (r) {
+  r.reply(`Hello ${r.nick}!`)
+}
 
-```coffeescript
-# ./sugars/hello.coffee
-callback = (r) -> r.reply "Hello #{r.reply}!"
-ontalk =
-  event: 'user:talk'
+export const ontalk = {
+  event: 'user:talk',
   trigger: callback
-onprivate =
-  event: 'user:private'
-  trigger: callback
+}
 
-module.exports = [ontalk, onprivate]
+export const onprivate = {
+  event: 'user:private',
+  trigger: callback
+}
 ```
 
-```coffeescript
-# ./bot.coffee
-hello = require './sugars/hello'
+```javascript
+// ./bot.js
+import * as hello from './lib/hello'
 
-#...
+//...
 
-bot.on hello
+bot.on(hello)
 
 bot.connect()
 ```
 
-This is an easy way to bundle sugars into a file and keep it simple and readable. Try it out!
-
 Extending the Bot
 =================
 
-To extend the bot, we are simply extending the `fatbot.Bot`. This might me a little risky, if you'd tries to overwrite Bot methods (like *constructor*, *connect*, *say* or any other methods).
-You should be aware of what methods you are adding to the Bot.
+You can extend the prototype of the `Bot` class. For example, the method `Bot::hear` is a built-in extension:
 
-In the future, I'd like to add these helpers in a different namespace (*sugars*).
-
-For more informations, see the [Classes section of coffeescript](http://coffeescript.org/#classes) to understand how to extend the prototype, especially with the `::` operator.
+```javascript
+Bot.prototype.hear = function (regex,callback) {
+  this.on('user:talk', (r) => {
+    if (r.text.match(regex)) {
+      callback(r)
+    }
+  })
+}
+```
 
 Events
 ======
 
 You can easily add behaviors to the bot by listening to events :
 
-```coffeescript
-bot.on 'user:join', (r) ->
-  r.reply "Welcome to #{r.channel}, #{r.nick}!"
+```javascript
+bot.on('user:join', (r) => {
+  r.reply(`Welcome to ${r.channel}, ${r.nick}!`)
+})
 ```
 
 `r` is the Response object.
 
-These are the events thrown by the bot. Check the Response object section for more informations
+These are the events thrown by the bot.
 
 <table>
 	<tr>
@@ -195,6 +181,9 @@ These are the events thrown by the bot. Check the Response object section for mo
 
 Change log
 ==========
+
+### 2014-10-19 **v-1.0.0*** ###
+* Rewrite the project into ES6. Nothing has changed in the API
 
 ### 2013-03-17 **v0.3.3** ###
 * Fix CB when using coffee-script v.1.6.x compiler
