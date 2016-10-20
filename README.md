@@ -34,7 +34,7 @@ let bot = new Bot({
 // Listen to Bot events
 
 bot.on('user:join', (r) => {
-  r.reply "Welcome to #{r.channel}, #{r.nick} !"
+  r.reply(`Welcome to ${r.channel}, ${r.nick} !`)
 })
 
 // Listening discussion
