@@ -182,8 +182,8 @@ These are the events thrown by the bot.
 Change log
 ==========
 
-### 2014-10-19 **v-1.0.0*** ###
-* Rewrite the project into ES6. Nothing has changed in the API
+### 2016-10-19 **v-1.0.0** ###
+* 🦄 Rewrite the project into ES6. Nothing has changed in the API
 
 ### 2013-03-17 **v0.3.3** ###
 * Fix CB when using coffee-script v.1.6.x compiler
