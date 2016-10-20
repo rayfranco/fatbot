@@ -143,37 +143,37 @@ These are the events thrown by the bot.
 		<th>Response</th>
 	</tr>
   <tr>
-    <td> `client:error` </td>
+    <td><code>client:error</code></td>
     <td>Error sent by the client</td>
     <td>err (isnt Response object)</td>
   </tr>
 	<tr>
-		<td> `self:connected` </td>
+		<td><code>self:connected</code></td>
 		<td>Bot is connected to server</td>
 		<td>server</td>
 	</tr>
 	<tr>
-		<td> `self:talk` </td>
+		<td><code>self:talk</code></td>
 		<td>Bot is talking</td>
 		<td>nick, text, client, reply(txt)</td>
 	</tr>
 	<tr>
-		<td> `self:join` </td>
+		<td><code>self:join</code></td>
 		<td>Bot is joining a channel</td>
 		<td>channel, nick, text, client</td>
 	</tr>
 	<tr>
-		<td> `user:talk` </td>
+		<td><code>user:talk</code></td>
 		<td>User is talking in channel</td>
 		<td>nick, channel, text, client, reply(txt)</td>
 	</tr>
 	<tr>
-		<td> `user:private` </td>
+		<td><code>user:private</code></td>
 		<td>User send pm to the bot</td>
 		<td>nick, text, client</td>
 	</tr>
 	<tr>
-		<td> `user:join` </td>
+		<td><code>user:join</code></td>
 		<td>User join a channel</td>
 		<td>channel, nick, text, client, reply(txt)</td>
 	</tr>
